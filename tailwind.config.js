@@ -6,15 +6,14 @@ module.exports = {
             },
 
             textColor: {
-                th: '#909399',
-                te: '#606266',
-                primary: '4e382d'
+                th: '#2D2521',
+                te: '#606266'
             }
         },
 
         backgroundColor: theme => ({
             ...theme('colors'),
-            main: '#918085',
+            main: '#2D2521',
             secondary: '#5B5750'
         })
     },
