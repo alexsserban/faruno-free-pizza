@@ -62,7 +62,7 @@ const dateAvailableSlot = value => {
     const now = new Date();
     let {fullDate: date} = createDateObject(value);
 
-    if (date.getDate() == now.getDate() && date < now) return false;
+    if (date.getDay() == now.getDay() && date < now) return false;
 
     return new Promise(async resolve => {
         const doc = await db
