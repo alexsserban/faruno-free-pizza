@@ -18,6 +18,12 @@ Vue.use(Vuelidate);
 import Vue2TouchEvents from 'vue2-touch-events';
 Vue.use(Vue2TouchEvents);
 
+Vue.directive('$model', {
+    bind: function(el, binding, vnode) {
+        el.oninput = () => (vnode.context[binding.expression] = el.value);
+    }
+});
+
 // Your web app's Firebase configuration
 var firebaseConfig = {
     apiKey: 'AIzaSyCPLccrrr-80_nUZ71Uw-QO5wxrB74Ljmo',

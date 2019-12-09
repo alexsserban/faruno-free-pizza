@@ -33,7 +33,7 @@
                         type="tel"
                         v-mask="'0### ### ###'"
                         placeholder="0722 333 444"
-                        v-model.lazy="user.phone"
+                        v-on:input="user.phone = $event.target.value"
                         @blur="$v.user.phone.$touch()"
                     />
                     <template v-if="$v.user.phone.$error">
