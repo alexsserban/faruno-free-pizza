@@ -1,6 +1,6 @@
 <template>
     <div>
-        <form class="w-full">
+        <form @submit.prevent class="w-full">
             <div class="flex flex-wrap mb-6 -mx-3">
                 <div class="w-full px-3">
                     <label class="mb-20 text-xs font-bold text-gray-700 uppercase nlock ">
@@ -159,7 +159,6 @@
             <div class="flex justify-end mt-4 -mx-3s">
                 <button
                     v-touch:tap="() => send()"
-                    @click.prevent="send()"
                     class="self-end px-4 py-2 font-bold text-white rounded bg-main hover:bg-secondary"
                 >
                     Trimite
