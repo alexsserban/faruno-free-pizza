@@ -72,7 +72,7 @@ const dateAvailableSlot = value => {
 
         const [date, hour] = value.split(' ');
 
-        if (!doc.data()[date] || !doc.data()[date][hour] || doc.data()[date][hour] <= 4) resolve(true);
+        if (!doc.data()[date] || !doc.data()[date][hour] || doc.data()[date][hour] < 4) resolve(true);
         resolve(false);
     });
 };
