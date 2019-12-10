@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Home from '../views/Home.vue';
-import AdminPage from '../views/AdminPage.vue';
+import PageHome from '../pages/PageHome.vue';
+import PageAdmin from '../pages/PageAdmin.vue';
 
 Vue.use(VueRouter);
 
@@ -9,12 +9,12 @@ const routes = [
     {
         path: '/',
         name: 'home',
-        component: Home
+        component: PageHome
     },
     {
         path: '/admin',
         name: 'admin',
-        component: AdminPage
+        component: PageAdmin
     }
 ];
 

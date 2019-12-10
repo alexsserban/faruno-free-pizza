@@ -29,7 +29,7 @@ export default {
         .auth()
         .signInWithEmailAndPassword(this.email, this.password);
 
-      this.$emit("validate");
+      this.$emit("successfullAdminLogin");
     }
   }
 };

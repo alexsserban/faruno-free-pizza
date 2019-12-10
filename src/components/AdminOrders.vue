@@ -1,102 +1,103 @@
 <template>
-    <div>
-        <div class="flex justify-between mb-5">
-            <h1 class="text-4xl font-semibold text-left">{{ title }}</h1>
-            <div class="md:w-1/3">
-                <input
-                    class="w-full px-4 py-2 leading-tight text-gray-700 bg-gray-200 border-2 border-gray-200 rounded appearance-none focus:outline-none"
-                    type="text"
-                    placeholder="Search by Name, Email or Phone"
-                    v-model="search"
-                    @blur="filterOrders"
-                    @keypress.enter="filterOrders"
-                />
-            </div>
-        </div>
+  <div v-if="ready" class="container py-10 mx-auto">
+    <AdminOrdersGroup
+      :orders="todaysOrders"
+      :title="'Today\'s Orders'"
+      :dates="[todaysOrders[0].date]"
+      :newOrders="newOrders"
+      class="mb-20"
+    />
 
-        <div v-if="dates.length">
-            <div v-for="(date, index) in dates" :key="index" class="mb-12">
-                <h3 class="text-base font-medium text-left">
-                    {{ date | dateFormat('DD.MM.YYYY') }}
-                </h3>
+    <AdminOrdersGroup
+      :orders="orders"
+      :title="'Upcoming Orders'"
+      :dates="upcomingDays()"
+      :newOrders="newOrders"
+      class="mb-20"
+    />
 
-                <Table
-                    v-if="searchedOrdersByDate(date).length"
-                    :orders="searchedOrdersByDate(date)"
-                    :filtered="filtered"
-                    :newOrders="newOrders"
-                />
-            </div>
-        </div>
-
-        <h3 v-else class="text-base font-medium text-left">No orders.</h3>
-    </div>
+    <AdminOrdersGroup
+      :orders="orders"
+      :title="'Previous Orders'"
+      :dates="previousDays()"
+      :newOrders="newOrders"
+    />
+  </div>
 </template>
 
 <script>
-import Table from './Table';
+import AdminOrdersGroup from "../components/AdminOrdersGroup";
+import { getAvailableDays } from "../helpers";
+import { db } from "../main";
+
+// New order notification
+import { Notyf } from "notyf";
+import "notyf/notyf.min.css";
+const notyf = new Notyf({
+  duration: 5000
+});
 
 export default {
-    props: {
-        orders: {
-            required: true,
-            type: Array
-        },
+  components: {
+    AdminOrdersGroup
+  },
 
-        title: {
-            required: true,
-            type: String
-        },
+  data() {
+    return {
+      orders: [],
+      newOrders: [],
+      ready: false
+    };
+  },
 
-        dates: {
-            required: true,
-            type: Array
-        },
-
-        newOrders: {
-            required: true,
-            type: Array
-        }
-    },
-
-    components: {Table},
-
-    data() {
-        return {
-            search: '',
-            filtered: []
-        };
-    },
-
-    computed: {},
-
-    methods: {
-        searchedOrdersByDate(date) {
-            return this.orders.filter(
-                order => order.date.getDate() == date.getDate()
-                //   (this.search ? order.name.toLowerCase().includes(this.search) ||
-                //       order.email.toLowerCase().includes(this.search) ||
-                //       order.phone.includes(this.search)
-                //     : true)
-            );
-        },
-
-        filterOrders() {
-            this.filtered = [];
-            if (this.search == '@new')
-                this.orders.forEach(order =>
-                    !this.newOrders.includes(order.email) ? this.filtered.push(order.email) : null
-                );
-            else
-                this.orders.forEach(order =>
-                    order.name.toLowerCase().includes(this.search) ||
-                    order.email.toLowerCase().includes(this.search) ||
-                    order.phone.includes(this.search)
-                        ? ''
-                        : this.filtered.push(order.email)
-                );
-        }
+  computed: {
+    todaysOrders() {
+      return this.orders.filter(
+        order => order.date.getDate() == new Date().getDate()
+      );
     }
+  },
+
+  methods: {
+    upcomingDays() {
+      return getAvailableDays(this.orders, true);
+    },
+
+    previousDays() {
+      return getAvailableDays(this.orders, false);
+    }
+  },
+
+  async created() {
+    const notification = await new Audio(
+      require("../assets/ios_notification.mp3")
+    );
+
+    setTimeout(() => (this.ready = true), 1000);
+
+    await db.collection("orders").onSnapshot(snapshot => {
+      snapshot.docChanges().forEach(change => {
+        if (change.type === "added") {
+          const date = new Date(change.doc.data().date.seconds * 1000);
+          const time =
+            date.getHours() + ":" + `0${date.getMinutes()}`.slice(-2);
+
+          this.orders.push({
+            ...change.doc.data(),
+            date,
+            time
+          });
+          this.orders.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+          if (this.ready == true) {
+            notyf.success(`New order from ${change.doc.data().name}`);
+            notification.play();
+            this.newOrders.push(change.doc.data().email);
+          }
+        }
+      });
+    });
+  }
 };
 </script>
 

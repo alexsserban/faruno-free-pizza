@@ -1,30 +1,23 @@
 import Vue from 'vue';
 import App from './App.vue';
+import router from './router';
 
 import firebase from 'firebase/app';
 import '@firebase/firestore';
-import router from './router';
 
 import VueFilterDateFormat from 'vue-filter-date-format';
-import './assets/tailwind.css';
-
 Vue.use(VueFilterDateFormat);
-
-Vue.config.productionTip = false;
 
 import Vuelidate from 'vuelidate';
 Vue.use(Vuelidate);
 
+// Mobile Tap
 import Vue2TouchEvents from 'vue2-touch-events';
 Vue.use(Vue2TouchEvents);
 
-Vue.directive('$model', {
-    bind: function(el, binding, vnode) {
-        el.oninput = () => (vnode.context[binding.expression] = el.value);
-    }
-});
+import './assets/tailwind.css';
 
-// Your web app's Firebase configuration
+// Firebase configuration
 var firebaseConfig = {
     apiKey: 'AIzaSyCPLccrrr-80_nUZ71Uw-QO5wxrB74Ljmo',
     authDomain: 'faruno-bde66.firebaseapp.com',
@@ -41,12 +34,7 @@ firebase.initializeApp(firebaseConfig);
 export const db = firebase.firestore();
 export const increment = firebase.firestore.FieldValue.increment(1);
 
-import {Notyf} from 'notyf';
-import 'notyf/notyf.min.css';
-export const notyf = new Notyf({
-    duration: 5000
-});
-
+Vue.config.productionTip = false;
 //firebase.analytics();
 
 new Vue({

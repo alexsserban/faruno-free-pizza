@@ -62,6 +62,7 @@ const dateAvailableSlot = value => {
     const now = new Date();
     let {fullDate: date} = createDateObject(value);
 
+    // Don't allow user to place orders for Today in past Time
     if (date.getDay() == now.getDay() && date < now) return false;
 
     return new Promise(async resolve => {
